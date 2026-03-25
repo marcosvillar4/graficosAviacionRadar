@@ -3,7 +3,7 @@ from tkinter import messagebox
 
 import gpxpy
 from geopy.distance import geodesic
-from tkinter import *
+from tkinter import * 
 from tkinter import ttk
 import matplotlib.pyplot as plt
 import adjustText
@@ -19,6 +19,7 @@ filenamevar = StringVar()
 graphname = StringVar()
 filename = StringVar()
 sizevar = StringVar()
+offset = StringVar()
 
 def validatefloat(P):
     if P == "":
@@ -145,12 +146,16 @@ def generargrafico():
     plt.show()
     return None
 
+def terminateProgram(event):
+    root.destroy()
+
 def main():
 
     root.title("Graficos")
 
     vcmd = (root.register(validatefloat), '%P')
-
+    
+    root.bind("<Control-q>", terminateProgram)
 
     mainframe = ttk.Frame(root, padding=(3, 3, 12, 12))
     mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
@@ -187,6 +192,10 @@ def datalabel(mainframe, vcmd):
     long_entry.grid(column=1, row=1, sticky=(W, E))
     ttk.Label(dataLf, text="Longitud: ").grid(column=0, row=1, sticky=W)
 
+    offset_entry = ttk.Entry(dataLf, width=7, textvariable=offset, validate='all', validatecommand=vcmd)
+    offset.set("0")
+    offset_entry.grid(column=1, row=2, sticky=(W, E))
+    ttk.Label(dataLf, text="Offset: ").grid(column=0, row=2, sticky=W)
 
 
     ttk.Label(dataLf, text="Archivo: ").grid(column=0, row=3, sticky=W)
