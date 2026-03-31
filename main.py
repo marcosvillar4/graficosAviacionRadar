@@ -8,9 +8,8 @@ from tkinter import *
 from tkinter import ttk
 import matplotlib.pyplot as plt
 import adjustText
-from scipy import interpolate
-import numpy as np
 
+from tk_panels import datalabel, graphlabel, waypointFrame
 
 root = Tk()
 gpxdata = gpxpy.gpx.GPX
@@ -160,9 +159,9 @@ def main():
     mainframe = ttk.Frame(root, padding=(3, 3, 12, 12))
     mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
 
-    dataLf = datalabel(mainframe, vcmd)
-    graphLf = graphlabel(mainframe)
-
+    dataLf = datalabel(mainframe, vcmd, [lat, long, offset, filename, selectfile])
+    graphLf = graphlabel(mainframe, [graphname, sizevar])
+    waypointFrame(mainframe, [])
 
 
     ttk.Button(mainframe, text="Generar Grafico", command=generargrafico).grid(column=0, row=3, sticky=W)
@@ -178,53 +177,5 @@ def main():
 
     root.mainloop()
 
-def datalabel(mainframe, vcmd):
-    dataLf = ttk.Labelframe(mainframe, text="Data", padding=(3, 3, 12, 12))
-    dataLf.grid(column=0, row=1, padx=20, pady=20, columnspan=3, sticky='WE', ipadx=10, ipady=10)
-    dataLf.columnconfigure(1, weight=1, pad=10)
-    dataLf.rowconfigure(list(range(4)), pad=5)
-
-    lat_entry = ttk.Entry(dataLf, width=7, textvariable=lat, validate='all', validatecommand=vcmd)
-    lat_entry.grid(column=1, row=0, sticky=(W, E))
-    ttk.Label(dataLf, text="Latidud: ").grid(column=0, row=0, sticky=W)
-
-    long_entry = ttk.Entry(dataLf, width=7, textvariable=long, validate='all', validatecommand=vcmd)
-    long_entry.grid(column=1, row=1, sticky=(W, E))
-    ttk.Label(dataLf, text="Longitud: ").grid(column=0, row=1, sticky=W)
-
-    offset_entry = ttk.Entry(dataLf, width=7, textvariable=offset, validate='all', validatecommand=vcmd)
-    offset.set("0")
-    offset_entry.grid(column=1, row=2, sticky=(W, E))
-    ttk.Label(dataLf, text="Offset: ").grid(column=0, row=2, sticky=W)
-
-
-    ttk.Label(dataLf, text="Archivo: ").grid(column=0, row=3, sticky=W)
-    ttk.Label(dataLf, textvariable=filename).grid(column=1, row=3, sticky=W)
-    ttk.Button(dataLf, text="Seleccionar archivo", command=selectfile).grid(column=0, row=4, sticky=W)
-
-
-    return dataLf
-
-def graphlabel(mainframe):
-
-    sizeList = ["xx-small", "x-small", "small", "medium", "large", "x-large", "xx-large"]
-
-    graphLf = ttk.Labelframe(mainframe, text="Configuracion Grafico", padding=(3, 3, 12, 12))
-    graphLf.grid(column=0, row=2, padx=20, pady=20, columnspan=3, sticky='WE', ipadx=10, ipady=10)
-
-    graphLf.columnconfigure(1, weight=1, pad=10)
-    graphLf.rowconfigure(list(range(4)), pad=5)
-
-    graph_entry = ttk.Entry(graphLf, width=7, textvariable=graphname)
-    graph_entry.grid(column=1, row=0, sticky=(W, E))
-    ttk.Label(graphLf, text="Nombre grafico: ").grid(column=0, row=0, sticky=W)
-
-    ttk.Label(graphLf, text="Tamaño anotaciones: ").grid(column=0,row=1, sticky=W)
-    size = ttk.Combobox(graphLf, textvariable=sizevar, width=7)
-    size['values'] = sizeList
-    size.current(3)
-    size.grid(column=1,row=1, sticky=(W, E))
-
-    return graphLf
 
 main()
