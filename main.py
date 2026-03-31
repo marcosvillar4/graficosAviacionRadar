@@ -1,5 +1,6 @@
 from tkinter.filedialog import askopenfilename
 from tkinter import messagebox
+from typing import Any
 
 import gpxpy
 from geopy.distance import geodesic
@@ -74,26 +75,28 @@ def generargrafico():
         messagebox.showerror(message="Archivo no seleccionado")
         return None
 
+    elif (long.get() == "" or lat.get() == ""):
+        messagebox.showwarning(message="Latitud o Longitud Base no especificadas!")
+
     print("_______________________________________________________________")
 
+    alturas, distancias, waypointlabels, xwaypoints, ywaypoints = coord_calc()
+
+    plot_func(alturas, distancias, waypointlabels, xwaypoints, ywaypoints)
+    return None
 
 
-
-
+def coord_calc() -> tuple[list[Any], list[Any], list[Any], list[Any], list[Any]]:
     datalist = getdistances()
     waypoints = getwaypoints()
-    #print(datalist)
+    # print(datalist)
 
     distancias = []
     alturas = []
 
-
-
     for i in datalist:
         distancias.append(i[0])
-        alturas.append((i[1] * 3.28084) / 100) # Conversion de altura metros del GPX a pies
-
-
+        alturas.append((i[1] * 3.28084) / 100)  # Conversion de altura metros del GPX a pies
 
     xwaypoints = []
     ywaypoints = []
@@ -103,12 +106,14 @@ def generargrafico():
         xwaypoints.append(i[0])
         ywaypoints.append((i[1] * 3.28084) / 100)
         waypointlabels.append(i[2])
+    return alturas, distancias, waypointlabels, xwaypoints, ywaypoints
 
 
+def plot_func(alturas: list[Any], distancias: list[Any], waypointlabels: list[Any], xwaypoints: list[Any],
+              ywaypoints: list[Any]):
     fig, ax = plt.subplots()
 
-    #ax.set_ylim(bottom=0)
-
+    # ax.set_ylim(bottom=0)
 
     ax.set_xlabel("Distancia (NM)")
     ax.set_ylabel("Altura (FL)")
@@ -117,15 +122,10 @@ def generargrafico():
     lines = ax.plot(distancias, alturas, lw=4)
     ax.scatter(xwaypoints, ywaypoints, c='r', marker='x')
 
+    anotations = [plt.text(xwaypoints[i], ywaypoints[i], waypointlabels[i], size=sizevar.get()) for i in
+                  range(len(xwaypoints))]
 
-
-
-
-    anotations = [plt.text(xwaypoints[i], ywaypoints[i], waypointlabels[i], size=sizevar.get()) for i in range(len(xwaypoints))]
-
-
-
-    plt.title(graphname.get()) #filenamevar.get().split('/')[-1].removesuffix('.gpx')
+    plt.title(graphname.get())  # filenamevar.get().split('/')[-1].removesuffix('.gpx')
     print(plt.get_backend())
     match plt.get_backend().lower():
         case "tkagg":
@@ -138,13 +138,13 @@ def generargrafico():
             mng = plt.get_current_fig_manager()
             mng.window.showMaximized()
 
-
-    plt.ylim((0,max(alturas) * 1.25))
+    plt.ylim((0, max(alturas) * 1.25))
     plt.xlim((0, max(distancias) * 1.25))
 
-    adjustText.adjust_text(anotations,arrowprops=dict(arrowstyle="-", color='red'), objects=lines, max_move=(10, 10), expand=(1.2,1.2), force_text=(1.25,1.25))#, prevent_crossings=True, only_move= "y")
+    adjustText.adjust_text(anotations, arrowprops=dict(arrowstyle="-", color='red'), objects=lines, max_move=(10, 10),
+                           expand=(1.2, 1.2), force_text=(1.25, 1.25))  # , prevent_crossings=True, only_move= "y")
     plt.show()
-    return None
+
 
 def terminateProgram(event):
     root.destroy()
