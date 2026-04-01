@@ -60,4 +60,12 @@ def waypointFrame(mainframe, vars):
 
     waypointLf.grid(column=4, row=0, rowspan=2)
 
-    Listbox(waypointLf, height=10).grid(row=0, column=0)
+    waypointLf.columnconfigure(1, weight=1, pad=10)
+    waypointLf.rowconfigure(list(range(4)), pad=5)
+
+    Listbox(waypointLf, height=10, listvariable=vars[0]).grid(row=0, column=0, rowspan=3)
+
+    ttk.Button(waypointLf, text="Eliminar").grid(row=0, column=1)
+    ttk.Button(waypointLf, text="Editar").grid(row=1, column=1)
+
+    return waypointLf

@@ -20,6 +20,7 @@ graphname = StringVar()
 filename = StringVar()
 sizevar = StringVar()
 offset = StringVar()
+waypointListWrapper = StringVar()
 
 def validatefloat(P):
     if P == "":
@@ -32,7 +33,6 @@ def validatefloat(P):
 
 def loadgpxfile(file):
     gpx_file = open(file, 'r')
-
     gpx = gpxpy.parse(gpx_file)
 
 
@@ -44,6 +44,12 @@ def selectfile():
     filenamevar.set(askopenfilename(filetypes=[("GPX File", "*.gpx")]))
     filename.set(filenamevar.get().split('/')[-1])
     gpxdata = loadgpxfile(filenamevar.get())
+    waypointList = getwaypoints()
+    temp = []
+    for i in waypointList:
+        temp.append(i[2])
+    waypointListWrapper.set(temp)
+
 
 def getdistances():
     datalist = []
@@ -159,9 +165,15 @@ def main():
     mainframe = ttk.Frame(root, padding=(3, 3, 12, 12))
     mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
 
+    waypointLf = waypointFrame(mainframe, [waypointListWrapper])
     dataLf = datalabel(mainframe, vcmd, [lat, long, offset, filename, selectfile])
     graphLf = graphlabel(mainframe, [graphname, sizevar])
-    waypointFrame(mainframe, [])
+
+
+
+
+
+
 
 
     ttk.Button(mainframe, text="Generar Grafico", command=generargrafico).grid(column=0, row=3, sticky=W)
